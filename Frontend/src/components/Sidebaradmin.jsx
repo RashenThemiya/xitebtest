@@ -3,6 +3,7 @@ import {
     FaBars,
     FaHome,
     FaNewspaper,
+    FaPills, // Icon for Drugs
     FaSignOutAlt,
     FaTimes
 } from "react-icons/fa";
@@ -12,9 +13,8 @@ import ConfirmWrapper from "./ConfirmWrapper"; // Adjust the path as needed
 
 const menuItems = [
     { path: "/admin-dashboard", icon: <FaHome />, label: "Dashboard" },
-
-   
     { path: "/order-management-admin", icon: <FaNewspaper />, label: "Orders Management" },
+    { path: "/drugs", icon: <FaPills />, label: "Drugs" },  // Added Drugs item
 ];
 
 const Sidebar = () => {

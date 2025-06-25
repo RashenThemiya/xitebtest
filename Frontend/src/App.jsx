@@ -14,13 +14,13 @@ import AdminQuotationPage from "./pages/adminordermangment/AdminQuotationPage";
 import OrderManagementAdmin from './pages/adminordermangment/OrderManagementAdmin';
 import Login from "./pages/Login";
 
+import DrugsPage from './pages/DrugsPage';
 import Register from './pages/Register';
 import UserDashboard from './pages/UserDashboard';
 import AddPrescription from './pages/userorderManagement/AddPrecpection';
 import OrderManagement from './pages/userorderManagement/orderManagement';
 import PrescriptionSummary from './pages/userorderManagement/PrescriptionSummary';
 import ViewOrders from './pages/userorderManagement/Vieworder';
-
 
 function App() {
   return (
@@ -37,7 +37,7 @@ function App() {
             <Route path="/order-management-admin" element={<OrderManagementAdmin />} />
             <Route path="/admin/orders/:id" element={<AdminOrderDetails />} />
 <Route path="/admin/orders/:id" element={<AdminOrderDetails />} />
-
+            <Route path="/drugs" element={<DrugsPage />} />
             {/* Protected routes */}
             <Route
               path="/admin-dashboard"
