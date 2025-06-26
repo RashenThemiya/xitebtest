@@ -20,7 +20,7 @@ const DrugsPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE}api/drugs`, {
+      const res = await fetch(`${API_BASE}/api/drugs`, {
         headers: { Authorization: `Bearer ${getAuthToken()}` },
       });
       if (!res.ok) throw new Error(`Failed to load drugs (${res.status})`);
