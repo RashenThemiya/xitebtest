@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Prescription;
 use App\Models\PrescriptionImage;
 use Illuminate\Http\Request;
-
+use App\Mail\PrescriptionQuotationedMail;
+use Illuminate\Support\Facades\Mail; // ✅ THIS is correct // ← Make sure this exists
 class PrescriptionController extends Controller
 {
     /**
@@ -247,24 +248,29 @@ class PrescriptionController extends Controller
         ]);
     }
     public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|string|in:pending,quotationed,approved,delivery,delivered',
-        ]);
+{
+    $request->validate([
+        'status' => 'required|string|in:pending,quotationed,approved,delivery,delivered',
+    ]);
 
-        $prescription = Prescription::findOrFail($id);
+    $prescription = Prescription::findOrFail($id);
+    $oldStatus = $prescription->status;
 
-        // Optional: Authorization check here, e.g.,
-        // if ($prescription->user_id !== auth()->id()) {
-        //    return response()->json(['message' => 'Unauthorized'], 403);
-        // }
+    $prescription->status = $request->status;
+    $prescription->save();
 
-        $prescription->status = $request->status;
-        $prescription->save();
+    // Send email only if status is changed to 'quotationed'
+    if ($oldStatus !== 'quotationed' && $request->status === 'quotationed') {
+        $user = $prescription->user; // assumes relationship exists
 
-        return response()->json([
-            'message' => 'Prescription status updated successfully.',
-            'prescription' => $prescription,
-        ]);
+        if ($user && $user->email) {
+            Mail::to($user->email)->send(new PrescriptionQuotationedMail($prescription));
+        }
     }
+
+    return response()->json([
+        'message' => 'Prescription status updated successfully.',
+        'prescription' => $prescription,
+    ]);
+}
 }
