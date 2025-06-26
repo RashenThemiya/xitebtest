@@ -20,7 +20,7 @@ const DrugsPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE}/api/drugs`, {
+      const res = await fetch(`${API_BASE}api/drugs`, {
         headers: { Authorization: `Bearer ${getAuthToken()}` },
       });
       if (!res.ok) throw new Error(`Failed to load drugs (${res.status})`);
@@ -57,7 +57,7 @@ const DrugsPage = () => {
 
     try {
       const method = form.id ? "PUT" : "POST";
-      const url = form.id ? `${API_BASE}/api/drugs/${form.id}` : `${API_BASE}/api/drugs`;
+      const url = form.id ? `${API_BASE}api/drugs/${form.id}` : `${API_BASE}/api/drugs`;
       const res = await fetch(url, {
         method,
         headers: {
