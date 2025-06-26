@@ -24,7 +24,9 @@ import ViewOrders from './pages/userorderManagement/Vieworder';
 
 function App() {
   return (
+        <BrowserRouter basename="/xitebtest">
     <AuthProvider>
+      
       <Router>
         <div className="min-h-screen bg-gray-100">
           <Routes>
@@ -55,6 +57,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+        </BrowserRouter>
   );
 }
 
