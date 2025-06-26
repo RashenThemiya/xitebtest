@@ -6,18 +6,20 @@ import { useAuth } from "../../context/AuthContext";
 
 const AddPrescription = () => {
   const navigate = useNavigate();
+  const { name, role } = useAuth();
+
   const [formData, setFormData] = useState({
     note: "",
     delivery_address: "",
     delivery_date: "",
     delivery_time: "",
   });
+
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const { name, role } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,24 +27,58 @@ const AddPrescription = () => {
 
   const handleImageChange = (e) => {
     const newFiles = Array.from(e.target.files);
+    const tooLarge = newFiles.filter((file) => file.size > 50 * 1024);
+
+    if (tooLarge.length > 0) {
+      setError("❌ One or more images exceed 50KB. Please choose smaller images.");
+      return;
+    }
+
     setImages((prev) => [...prev, ...newFiles]);
+    setError(null);
   };
 
   const removeImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+
+    if (loading) return;
+
+    const { delivery_address, delivery_date, delivery_time } = formData;
+
+    if (!delivery_address || !delivery_date || !delivery_time) {
+      setError("❌ Please fill in all required fields.");
+      return;
+    }
+
+    if (images.length === 0) {
+      setError("❌ Please upload at least one image.");
+      return;
+    }
+
+    const oversized = images.filter((img) => img.size > 50 * 1024);
+    if (oversized.length > 0) {
+      setError("❌ All images must be smaller than 50KB.");
+      return;
+    }
+
+    setError(null);
+    setShowConfirm(true);
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
 
-    // Combine date and time into a single datetime string
     const fullDateTime = `${formData.delivery_date} ${formData.delivery_time}`;
 
     const body = new FormData();
     body.append("note", formData.note);
     body.append("delivery_address", formData.delivery_address);
-    body.append("delivery_time", fullDateTime); // ✅ full timestamp for Laravel
+    body.append("delivery_time", fullDateTime);
     images.forEach((img, i) => {
       body.append(`images[${i}]`, img);
     });
@@ -66,8 +102,15 @@ const AddPrescription = () => {
         });
         setImages([]);
       } else {
-        const errorData = await res.json();
-        setError(errorData.message || "Something went wrong.");
+        let message = "Something went wrong.";
+        try {
+          const errorData = await res.json();
+          message = errorData.message || message;
+        } catch {
+          const text = await res.text();
+          message = text || message;
+        }
+        setError(message);
       }
     } catch (err) {
       console.error("Error:", err);
@@ -75,11 +118,6 @@ const AddPrescription = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    setShowConfirm(true);
   };
 
   return (
@@ -97,7 +135,7 @@ const AddPrescription = () => {
 
         {error && (
           <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-4 text-center border border-red-400">
-            ❌ {error}
+            {error}
           </div>
         )}
 
@@ -176,7 +214,7 @@ const AddPrescription = () => {
               required={images.length === 0}
             />
             <p className="text-sm text-gray-500 mt-1">
-              You can upload multiple JPG/PNG images.
+              Upload JPG/PNG images under 50KB each. You can upload multiple files.
             </p>
 
             {images.length > 0 && (
@@ -186,7 +224,9 @@ const AddPrescription = () => {
                     key={idx}
                     className="flex justify-between items-center text-sm bg-gray-100 p-2 rounded"
                   >
-                    <span className="truncate max-w-[70%]">{file.name}</span>
+                    <span className="truncate max-w-[70%]">
+                      {file.name} — {(file.size / 1024).toFixed(1)}KB
+                    </span>
                     <button
                       type="button"
                       onClick={() => removeImage(idx)}
