@@ -62,6 +62,11 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
 ---
+Database
+user login detials
+email- ravi@example.com  password -secret123
+admin login details
+email- ravii@example.com  password -secret123
 
 ## ✅ Key Features Implemented
 
@@ -93,20 +98,7 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 3. Confirm submission in modal
 4. View success message or relevant errors
 
----
-
-## 🧪 Testing Tools (Optional)
-
-* Postman Collection Available (on request)
-* Demo credentials / auth token (can be shared privately if needed)
-
----
-
-## 📂 Folder Structure
-
----
-
-## 🙋 Notes
+--
 
 * Backend is currently deployed on an **AWS EC2 free-tier instance** for demo/testing only.
 * Feel free to unzip and run locally to verify validations and functionality.
